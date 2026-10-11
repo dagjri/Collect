@@ -2,14 +2,330 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>COLLECT.</title>
 <style>
-  body { font-family: sans-serif; background: #fafafa; color: #111; display: grid; place-items: center; min-height: 100vh; margin: 0; }
-  h1 { letter-spacing: 0.15em; }
+:root{--bg:#fafafa;--card:#fff;--ink:#111;--sub:#6b6b6b;--line:#e3e3e3;--soft:#f0f0f0;--danger:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1b1b1b;--ink:#f2f2f2;--sub:#9a9a9a;--line:#2d2d2d;--soft:#242424;--danger:#ff8a80}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;font-size:16px;line-height:1.5;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(12px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
+h1{margin:0;font-size:20px;letter-spacing:.18em}
+#cnt{font-size:13px;color:var(--sub)}
+main{max-width:760px;margin:0 auto;padding:16px}
+h2{font-size:18px;margin:4px 0 12px}
+h3{font-size:14px;color:var(--sub);margin:22px 0 8px;font-weight:600}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-size:13px;color:var(--sub);margin:12px 0 4px}
+button{min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
+button.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button.dng{color:var(--danger)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1}
+.bar{display:flex;gap:8px;margin-bottom:10px}
+details{margin-bottom:10px}
+summary{cursor:pointer;color:var(--sub);font-size:14px;min-height:36px;display:flex;align-items:center}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);margin:6px 0 10px}
+.meta select{width:auto;min-height:36px;padding:4px 8px}
+.card{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer}
+.thumb{width:64px;height:64px;border-radius:10px;background:var(--soft);flex:none;object-fit:cover;display:grid;place-items:center;color:var(--sub);font-size:11px;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.ct{min-width:0;flex:1}
+.ct b{display:block;overflow-wrap:anywhere}
+.sub{font-size:13px;color:var(--sub);overflow-wrap:anywhere}
+.badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.bd{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--sub)}
+.bd.k{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.empty{text-align:center;color:var(--sub);padding:48px 16px;border:1px dashed var(--line);border-radius:14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border-bottom:0}
+.note{font-size:13px;color:var(--sub);background:var(--soft);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bg);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;background:transparent;min-height:56px;font-size:12px;color:var(--sub);padding:0 2px}
+nav button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 2px 0 var(--ink)}
+#fab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:28px;padding:0;border:0;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.panel{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+@media(min-width:700px){.sheet{align-items:center}.panel{border-radius:18px}}
+.dl{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:14px;margin:12px 0}
+.dl dt{color:var(--sub)}.dl dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+#toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%}
+#toast.on{opacity:1}
 </style>
 </head>
 <body>
-  <h1>COLLECT.</h1>
+<header><h1 id="appname">COLLECT.</h1><span id="cnt"></span></header>
+<main id="main"></main>
+<button id="fab" data-act="add" aria-label="アイテムを追加">＋</button>
+<nav id="nav">
+  <button data-act="tab" data-t="owned">所持</button>
+  <button data-act="tab" data-t="wanted">求め</button>
+  <button data-act="tab" data-t="lists">リスト</button>
+  <button data-act="tab" data-t="trade">交換</button>
+  <button data-act="tab" data-t="settings">設定</button>
+</nav>
+<div class="sheet" id="sheet" hidden><div class="panel" id="panel"></div></div>
+<div id="toast"></div>
+
+<script>
+const APP='COLLECT.';
+const KEY='collect_v1',PREV='collect_v1_prev';
+const CATS=['CD','DVD/Blu-ray','グッズ','写真','トレカ','雑誌','書籍','ライブ映像','TV録画','その他'];
+const TR=['','交換可','相談中','取り置き','成立','キャンセル','交換不可'];
+const COND=['','新品・未開封','美品','良好','傷あり','難あり'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const okUrl=u=>/^https?:\/\//i.test(u||'');
+document.title=APP;$('#appname').textContent=APP;
+
+function fixItem(x){
+  const s=(k,n)=>String(x[k]==null?'':x[k]).slice(0,n||300);
+  return{id:s('id',60)||uid(),title:s('title'),status:x.status==='wanted'?'wanted':'owned',category:s('category',60),artist:s('artist'),member:s('member'),release:s('release',20),edition:s('edition'),format:s('format'),qty:Math.max(0,parseInt(x.qty,10)||0),condition:s('condition',40),pdate:s('pdate',20),price:s('price',30),store:s('store'),notes:s('notes',2000),image:okUrl(x.image)?s('image',1000):'',tags:(Array.isArray(x.tags)?x.tags:[]).map(t=>String(t).trim().slice(0,30)).filter(Boolean).slice(0,20),listId:s('listId',60),trade:TR.indexOf(x.trade)>=0?x.trade:'',added:Number(x.added)||Date.now()};
+}
+function norm(r){
+  return{items:(Array.isArray(r.items)?r.items:[]).filter(x=>x&&typeof x==='object').map(fixItem),
+    lists:(Array.isArray(r.lists)?r.lists:[]).filter(l=>l&&l.id&&l.name).map(l=>({id:String(l.id).slice(0,60),name:String(l.name).slice(0,40)})),
+    cats:(Array.isArray(r.cats)?r.cats:[]).map(c=>String(c).slice(0,30)).filter(Boolean)};
+}
+function load(){try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&Array.isArray(r.items))return norm(r)}catch(e){}return{items:[],lists:[],cats:[]}}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('保存に失敗しました。端末の空き容量を確認してください');return false}}
+let ui={tab:'owned',q:'',cat:'',artist:'',tag:'',list:'',trade:'',sort:'added',listView:''};
+let importMode='merge';
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2400)}
+function allCats(){return CATS.concat(S.cats.filter(c=>CATS.indexOf(c)<0))}
+function listName(id){const l=S.lists.find(x=>x.id===id);return l?l.name:''}
+function uniq(a){return Array.from(new Set(a.filter(Boolean)))}
+
+function baseItems(){
+  if(ui.tab==='owned')return S.items.filter(i=>i.status==='owned');
+  if(ui.tab==='wanted')return S.items.filter(i=>i.status==='wanted');
+  if(ui.tab==='trade')return S.items.filter(i=>i.trade!=='');
+  if(ui.tab==='lists')return S.items.filter(i=>i.listId===ui.listView);
+  return[];
+}
+function match(it){
+  const q=ui.q.trim().toLowerCase();
+  if(q){const h=[it.title,it.artist,it.member,it.edition,it.format,it.store,it.notes,it.category].concat(it.tags).join(' ').toLowerCase();
+    if(!q.split(/\s+/).every(w=>h.indexOf(w)>=0))return false}
+  if(ui.cat&&it.category!==ui.cat)return false;
+  if(ui.artist&&it.artist!==ui.artist)return false;
+  if(ui.tag&&it.tags.indexOf(ui.tag)<0)return false;
+  if(ui.list&&it.listId!==ui.list)return false;
+  if(ui.trade&&it.trade!==ui.trade)return false;
+  return true;
+}
+function sorter(){
+  const c=(a,b)=>String(a).localeCompare(String(b),'ja');
+  if(ui.sort==='title')return(a,b)=>c(a.title,b.title);
+  if(ui.sort==='release')return(a,b)=>c(b.release,a.release);
+  if(ui.sort==='artist')return(a,b)=>c(a.artist,b.artist)||c(a.title,b.title);
+  return(a,b)=>b.added-a.added;
+}
+
+function render(){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===ui.tab));
+  const o=S.items.filter(i=>i.status==='owned').length,w=S.items.length-o;
+  $('#cnt').textContent='所持 '+o+' / 求め '+w;
+  const m=$('#main');
+  const showFab=ui.tab==='owned'||ui.tab==='wanted'||(ui.tab==='lists'&&ui.listView);
+  $('#fab').style.display=showFab?'block':'none';
+  if(ui.tab==='settings'){m.innerHTML=viewSettings();return}
+  if(ui.tab==='lists'&&!ui.listView){m.innerHTML=viewListIndex();return}
+  let head='';
+  if(ui.tab==='owned')head='<h2>所持リスト</h2>';
+  else if(ui.tab==='wanted')head='<h2>求めリスト</h2>';
+  else if(ui.tab==='trade')head='<h2>交換管理</h2><div class="note">「交換の状態」を設定したアイテムがここに集まります。</div>';
+  else{const l=S.lists.find(x=>x.id===ui.listView);
+    head='<div class="row" style="margin-bottom:10px"><button data-act="backlist">← リスト一覧</button><button data-act="renlist" data-id="'+esc(ui.listView)+'">名前変更</button><button class="dng" data-act="dellist" data-id="'+esc(ui.listView)+'">削除</button></div><h2>'+esc(l?l.name:'')+'</h2>';}
+  const base=baseItems();
+  const arts=uniq(base.map(i=>i.artist)).sort(),tags=uniq([].concat.apply([],base.map(i=>i.tags))).sort();
+  const opt=(arr,v,ph)=>'<option value="">'+ph+'</option>'+arr.map(x=>'<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>').join('');
+  m.innerHTML=head+
+    '<div class="bar"><input id="q" type="search" placeholder="タイトル・グループ・メンバーなどで検索" value="'+esc(ui.q)+'"></div>'+
+    '<details'+((ui.cat||ui.artist||ui.tag||ui.list||ui.trade)?' open':'')+'><summary>絞り込み</summary><div class="filters">'+
+    '<select data-f="cat">'+opt(allCats(),ui.cat,'カテゴリ: すべて')+'</select>'+
+    '<select data-f="artist">'+opt(arts,ui.artist,'グループ: すべて')+'</select>'+
+    '<select data-f="tag">'+opt(tags,ui.tag,'タグ: すべて')+'</select>'+
+    '<select data-f="list"><option value="">リスト: すべて</option>'+S.lists.map(l=>'<option value="'+esc(l.id)+'"'+(l.id===ui.list?' selected':'')+'>'+esc(l.name)+'</option>').join('')+'</select>'+
+    '<select data-f="trade"><option value="">交換: すべて</option>'+TR.filter(Boolean).map(t=>'<option'+(t===ui.trade?' selected':'')+'>'+t+'</option>').join('')+'</select>'+
+    '<button data-act="resetf">条件をリセット</button></div></details>'+
+    '<div class="meta"><span id="res"></span><select data-f="sort">'+
+    [['added','追加が新しい順'],['title','タイトル順'],['release','発売日が新しい順'],['artist','グループ順']].map(a=>'<option value="'+a[0]+'"'+(ui.sort===a[0]?' selected':'')+'>'+a[1]+'</option>').join('')+
+    '</select></div><div id="cards"></div>';
+  renderCards();
+}
+function renderCards(){
+  const base=baseItems(),list=base.filter(match).sort(sorter());
+  $('#res').textContent=list.length+'件';
+  let h='';
+  if(!list.length){
+    h=base.length?'<div class="empty">条件に合うアイテムがありません。<br>検索や絞り込みを変えてみてください。</div>'
+      :'<div class="empty">まだアイテムがありません。<br>'+(ui.tab==='trade'?'アイテムの「交換の状態」を設定すると、ここに表示されます。':'右下の「＋」から最初の1件を追加しましょう。')+'</div>';
+  }else h=list.map(card).join('');
+  $('#cards').innerHTML=h;
+}
+function card(it){
+  const sub=[it.artist,it.member].filter(Boolean).join(' / ');
+  const sub2=[it.edition,it.format].filter(Boolean).join(' · ');
+  const b=[];
+  if(it.category)b.push('<span class="bd">'+esc(it.category)+'</span>');
+  if(it.qty>1)b.push('<span class="bd">×'+it.qty+'</span>');
+  if(it.trade)b.push('<span class="bd k">'+esc(it.trade)+'</span>');
+  if(it.listId&&listName(it.listId))b.push('<span class="bd">'+esc(listName(it.listId))+'</span>');
+  if(ui.tab==='trade')b.push('<span class="bd">'+(it.status==='owned'?'所持':'求め')+'</span>');
+  const th=it.image?'<div class="thumb"><img src="'+esc(it.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.textContent=\'画像なし\'"></div>':'<div class="thumb">NO IMG</div>';
+  return'<div class="card" data-act="open" data-id="'+esc(it.id)+'">'+th+'<div class="ct"><b>'+esc(it.title||'(無題)')+'</b>'+(sub?'<div class="sub">'+esc(sub)+'</div>':'')+(sub2?'<div class="sub">'+esc(sub2)+'</div>':'')+'<div class="badges">'+b.join('')+'</div></div></div>';
+}
+
+function viewListIndex(){
+  const rows=S.lists.map(l=>{const n=S.items.filter(i=>i.listId===l.id).length;
+    return'<div class="li" data-act="viewlist" data-id="'+esc(l.id)+'"><span><b>'+esc(l.name)+'</b></span><span class="sub">'+n+'件 ›</span></div>'}).join('');
+  const un=S.items.filter(i=>!i.listId||!listName(i.listId)).length;
+  return'<h2>カスタムリスト</h2><div class="note">リストは「ライブ別」「推し別」など自由に作れます。アイテムの編集画面でリストを選べます。</div>'+
+    '<div class="box">'+(rows||'<div class="sub" style="padding:8px 0">まだリストがありません。</div>')+'<div class="li" style="cursor:default"><span class="sub">リスト未設定</span><span class="sub">'+un+'件</span></div></div>'+
+    '<button class="pri" data-act="newlist" style="width:100%">＋ 新しいリストを作る</button>';
+}
+
+function viewSettings(){
+  const cats=S.cats.map((c,i)=>'<div class="li" style="cursor:default"><span>'+esc(c)+'</span><button class="dng" data-act="delcat" data-i="'+i+'">削除</button></div>').join('');
+  return'<h2>設定・バックアップ</h2>'+
+  '<div class="note"><b>いまの保存場所：このブラウザの中だけ（仮保存）</b><br>他の端末とは共有されず、ブラウザのデータを消すと失われます。こまめに下のバックアップを取ってください。ログインと共有は次の段階で追加します。</div>'+
+  '<h3>公開・非公開について</h3><div class="box sub">この版では、データはあなたの端末から外に出ません。友達に見せる機能はまだありません（次の段階で「選んだリストだけ閲覧専用」を作ります）。</div>'+
+  '<h3>バックアップ</h3><div class="box"><div class="row"><button data-act="export">JSONを書き出す</button><button data-act="csv">CSVを書き出す</button></div>'+
+  '<div class="row" style="margin-top:8px"><button data-act="impmerge">読み込み（追加）</button><button data-act="impreplace">読み込み（置き換え）</button></div>'+
+  '<input id="file" type="file" accept=".json,application/json" hidden></div>'+
+  '<h3>カテゴリを追加</h3><div class="box"><div class="bar"><input id="newcat" placeholder="例：ペンライト" maxlength="30"><button data-act="addcat" style="flex:none">追加</button></div>'+cats+'</div>'+
+  '<h3>データの削除</h3><div class="box"><button class="dng" data-act="wipe" style="width:100%">すべてのデータを削除</button></div>';
+}
+
+function openSheet(h){$('#panel').innerHTML=h;$('#sheet').hidden=false;document.body.style.overflow='hidden';$('#panel').scrollTop=0}
+function closeSheet(){$('#sheet').hidden=true;document.body.style.overflow='';$('#panel').innerHTML=''}
+
+function detail(id){
+  const it=S.items.find(x=>x.id===id);if(!it)return;
+  const rows=[['状態',it.status==='owned'?'所持':'求め'],['カテゴリ',it.category],['グループ',it.artist],['メンバー',it.member],['発売日',it.release],['版・バージョン',it.edition],['形態',it.format],['数量',it.qty],['コンディション',it.condition],['購入日',it.pdate],['購入価格',it.price?it.price+' 円':''],['購入先',it.store],['リスト',listName(it.listId)],['交換の状態',it.trade],['タグ',it.tags.join('、')],['メモ',it.notes]].filter(r=>r[1]!==''&&r[1]!==undefined);
+  openSheet((it.image?'<div class="thumb" style="width:100%;height:200px;margin-bottom:10px"><img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.textContent=\'画像を読み込めません\'"></div>':'')+
+   '<h2>'+esc(it.title||'(無題)')+'</h2><dl class="dl">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+esc(r[1])+'</dd>').join('')+'</dl>'+
+   '<div class="row"><button class="pri" data-act="edit" data-id="'+esc(id)+'">編集</button><button data-act="dup" data-id="'+esc(id)+'">複製</button></div>'+
+   '<div class="row" style="margin-top:8px"><button data-act="flip" data-id="'+esc(id)+'">'+(it.status==='owned'?'求めリストへ移動':'所持リストへ移動')+'</button><button class="dng" data-act="del" data-id="'+esc(id)+'">削除</button></div>'+
+   '<button data-act="close" style="width:100%;margin-top:8px">閉じる</button>');
+}
+
+function form(id,preStatus){
+  const it=id?S.items.find(x=>x.id===id):null;
+  const v=it||{title:'',status:preStatus||'owned',category:'',artist:'',member:'',release:'',edition:'',format:'',qty:1,condition:'',pdate:'',price:'',store:'',notes:'',image:'',tags:[],listId:ui.listView||'',trade:''};
+  const sel=(arr,cur,blank)=>(blank?'<option value="">'+blank+'</option>':'')+arr.map(x=>'<option'+(x===cur?' selected':'')+'>'+esc(x)+'</option>').join('');
+  const cats=allCats();if(v.category&&cats.indexOf(v.category)<0)cats.push(v.category);
+  openSheet('<h2>'+(it?'アイテムを編集':'アイテムを追加')+'</h2><form id="f" autocomplete="off">'+
+   '<label>タイトル（必須）</label><input name="title" required maxlength="200" value="'+esc(v.title)+'">'+
+   '<div class="row"><div><label>リスト種別</label><select name="status"><option value="owned"'+(v.status==='owned'?' selected':'')+'>所持</option><option value="wanted"'+(v.status==='wanted'?' selected':'')+'>求め</option></select></div>'+
+   '<div><label>カテゴリ</label><select name="category">'+sel(cats,v.category,'未選択')+'</select></div></div>'+
+   '<div class="row"><div><label>グループ・作品名</label><input name="artist" maxlength="100" value="'+esc(v.artist)+'"></div><div><label>メンバー・キャラ</label><input name="member" maxlength="100" value="'+esc(v.member)+'"></div></div>'+
+   '<label>版・バージョン（初回限定A、店舗特典など）</label><input name="edition" maxlength="100" value="'+esc(v.edition)+'">'+
+   '<div class="row"><div><label>形態</label><input name="format" maxlength="100" placeholder="CD+DVD など" value="'+esc(v.format)+'"></div><div><label>発売日</label><input type="date" name="release" value="'+esc(v.release)+'"></div></div>'+
+   '<div class="row"><div><label>数量</label><input type="number" name="qty" min="0" max="9999" inputmode="numeric" value="'+esc(v.qty)+'"></div><div><label>コンディション</label><select name="condition">'+sel(COND,v.condition,'未選択')+'</select></div></div>'+
+   '<div class="row"><div><label>購入日</label><input type="date" name="pdate" value="'+esc(v.pdate)+'"></div><div><label>購入価格（円）</label><input name="price" inputmode="decimal" maxlength="12" value="'+esc(v.price)+'"></div></div>'+
+   '<label>購入先</label><input name="store" maxlength="100" value="'+esc(v.store)+'">'+
+   '<label>タグ（カンマ区切り）</label><input name="tags" maxlength="200" value="'+esc(v.tags.join(', '))+'">'+
+   '<label>カスタムリスト</label><select name="listId"><option value="">リストなし</option>'+S.lists.map(l=>'<option value="'+esc(l.id)+'"'+(l.id===v.listId?' selected':'')+'>'+esc(l.name)+'</option>').join('')+'</select>'+
+   '<label>交換の状態</label><select name="trade">'+TR.map(t=>'<option value="'+t+'"'+(t===v.trade?' selected':'')+'>'+(t||'交換対象外')+'</option>').join('')+'</select>'+
+   '<label>画像URL（https://から。任意）</label><input name="image" type="url" maxlength="1000" value="'+esc(v.image)+'">'+
+   '<label>メモ</label><textarea name="notes" maxlength="2000">'+esc(v.notes)+'</textarea>'+
+   '<div class="row" style="margin-top:16px"><button type="button" data-act="close">キャンセル</button><button class="pri" type="submit">保存</button></div>'+
+   '<input type="hidden" name="id" value="'+esc(id||'')+'"></form>');
+}
+function submitForm(f){
+  const d=new FormData(f),g=k=>String(d.get(k)||'').trim();
+  if(!g('title')){toast('タイトルを入力してください');return}
+  const img=g('image');if(img&&!okUrl(img)){toast('画像URLは http:// か https:// から始めてください');return}
+  const price=g('price').replace(/[,，円]/g,'');if(price&&isNaN(Number(price))){toast('購入価格は数字で入力してください');return}
+  const old=S.items.find(x=>x.id===g('id'));
+  const it=fixItem({id:old?old.id:uid(),added:old?old.added:Date.now(),title:g('title'),status:g('status'),category:g('category'),artist:g('artist'),member:g('member'),release:g('release'),edition:g('edition'),format:g('format'),qty:g('qty'),condition:g('condition'),pdate:g('pdate'),price:price,store:g('store'),notes:g('notes'),image:img,tags:g('tags').split(/[,、，]/),listId:g('listId'),trade:g('trade')});
+  if(old)S.items[S.items.indexOf(old)]=it;else S.items.push(it);
+  if(!save()){return}
+  closeSheet();render();toast('保存しました');
+}
+
+function download(name,text,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:type}));a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+}
+const stamp=()=>new Date().toISOString().slice(0,10);
+function doExport(){download('collect-backup-'+stamp()+'.json',JSON.stringify({app:'COLLECT',version:1,exported:new Date().toISOString(),items:S.items,lists:S.lists,cats:S.cats},null,2),'application/json');toast('バックアップを書き出しました')}
+function doCsv(){
+  const cols=[['title','タイトル'],['status','状態'],['category','カテゴリ'],['artist','グループ'],['member','メンバー'],['release','発売日'],['edition','版'],['format','形態'],['qty','数量'],['condition','コンディション'],['pdate','購入日'],['price','購入価格'],['store','購入先'],['trade','交換の状態'],['tags','タグ'],['notes','メモ']];
+  const cell=v=>{let s=Array.isArray(v)?v.join(' '):String(v==null?'':v);if(/^[=+\-@]/.test(s))s="'"+s;return'"'+s.replace(/"/g,'""')+'"'};
+  const lines=[cols.map(c=>cell(c[1])).join(',')].concat(S.items.map(i=>cols.map(c=>cell(c[0]==='status'?(i.status==='owned'?'所持':'求め'):i[c[0]])).join(',')));
+  download('collect-'+stamp()+'.csv','\ufeff'+lines.join('\r\n'),'text/csv');toast('CSVを書き出しました');
+}
+function doImport(file){
+  const rd=new FileReader();
+  rd.onerror=()=>toast('ファイルを読み込めませんでした');
+  rd.onload=()=>{
+    let r;try{r=JSON.parse(rd.result)}catch(e){toast('JSONとして読み込めません。データは変更していません');return}
+    if(!r||!Array.isArray(r.items)){toast('COLLECT.のバックアップではないようです。データは変更していません');return}
+    const n=norm(r);
+    if(importMode==='replace'){
+      if(!confirm('現在のデータをすべて消して、'+n.items.length+'件に置き換えます。よろしいですか？\n（直前のデータは1つ前の状態としてブラウザ内に残します）'))return;
+      try{localStorage.setItem(PREV,JSON.stringify(S))}catch(e){}
+      S=n;
+    }else{
+      if(!confirm(n.items.length+'件を現在のデータに追加します。同じIDのアイテムは重複させません。よろしいですか？'))return;
+      try{localStorage.setItem(PREV,JSON.stringify(S))}catch(e){}
+      const ids=new Set(S.items.map(i=>i.id));let add=0;
+      n.items.forEach(i=>{if(!ids.has(i.id)){S.items.push(i);add++}});
+      n.lists.forEach(l=>{if(!S.lists.some(x=>x.id===l.id))S.lists.push(l)});
+      S.cats=uniq(S.cats.concat(n.cats));
+      toast(add+'件を追加しました');
+    }
+    save();render();
+  };
+  rd.readAsText(file);
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');
+  if(e.target.id==='sheet'){closeSheet();return}
+  if(!b)return;
+  const a=b.dataset.act,id=b.dataset.id;
+  if(a==='tab'){ui={tab:b.dataset.t,q:'',cat:'',artist:'',tag:'',list:'',trade:'',sort:ui.sort,listView:''};render();window.scrollTo(0,0)}
+  else if(a==='add')form(null,ui.tab==='wanted'?'wanted':'owned');
+  else if(a==='open')detail(id);
+  else if(a==='edit')form(id);
+  else if(a==='close')closeSheet();
+  else if(a==='dup'){const it=S.items.find(x=>x.id===id);if(it){const c=fixItem(Object.assign({},it,{id:uid(),added:Date.now(),title:it.title+'（コピー）'}));S.items.push(c);save();closeSheet();render();toast('複製しました')}}
+  else if(a==='flip'){const it=S.items.find(x=>x.id===id);if(it){it.status=it.status==='owned'?'wanted':'owned';save();closeSheet();render();toast('移動しました')}}
+  else if(a==='del'){const it=S.items.find(x=>x.id===id);if(it&&confirm('「'+(it.title||'(無題)')+'」を削除します。元に戻せません。よろしいですか？')){S.items=S.items.filter(x=>x.id!==id);save();closeSheet();render();toast('削除しました')}}
+  else if(a==='resetf'){ui.q='';ui.cat=ui.artist=ui.tag=ui.list=ui.trade='';render()}
+  else if(a==='newlist'){const n=(prompt('リスト名を入力してください（40文字まで）')||'').trim().slice(0,40);if(n){S.lists.push({id:uid(),name:n});save();render()}}
+  else if(a==='viewlist'){ui.listView=id;ui.q='';render();window.scrollTo(0,0)}
+  else if(a==='backlist'){ui.listView='';render()}
+  else if(a==='renlist'){const l=S.lists.find(x=>x.id===id);const n=l&&(prompt('新しい名前',l.name)||'').trim().slice(0,40);if(n){l.name=n;save();render()}}
+  else if(a==='dellist'){const l=S.lists.find(x=>x.id===id);if(l&&confirm('リスト「'+l.name+'」を削除します。中のアイテムは消えず「リスト未設定」になります。よろしいですか？')){S.lists=S.lists.filter(x=>x.id!==id);S.items.forEach(i=>{if(i.listId===id)i.listId=''});save();ui.listView='';render();toast('リストを削除しました')}}
+  else if(a==='addcat'){const n=($('#newcat').value||'').trim().slice(0,30);if(!n)return;if(allCats().indexOf(n)>=0){toast('すでにあります');return}S.cats.push(n);save();render()}
+  else if(a==='delcat'){const c=S.cats[+b.dataset.i];if(c&&confirm('カテゴリ「'+c+'」を一覧から削除します。このカテゴリのアイテムは消えません。')){S.cats.splice(+b.dataset.i,1);save();render()}}
+  else if(a==='export')doExport();
+  else if(a==='csv')doCsv();
+  else if(a==='impmerge'||a==='impreplace'){importMode=a==='impmerge'?'merge':'replace';$('#file').click()}
+  else if(a==='wipe'){if(confirm('すべてのデータを削除します。元に戻せません。先にバックアップを取りましたか？')&&confirm('本当に削除しますか？')){try{localStorage.setItem(PREV,JSON.stringify(S))}catch(e){}S={items:[],lists:[],cats:[]};save();render();toast('削除しました')}}
+});
+document.addEventListener('input',e=>{if(e.target.id==='q'){ui.q=e.target.value;renderCards()}});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.f){ui[t.dataset.f]=t.value;if(t.dataset.f==='sort')renderCards();else renderCards()}
+  if(t.id==='file'&&t.files&&t.files[0]){doImport(t.files[0]);t.value=''}
+});
+document.addEventListener('submit',e=>{if(e.target.id==='f'){e.preventDefault();submitForm(e.target)}});
+render();
+</script>
 </body>
 </html>
